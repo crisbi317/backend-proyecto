@@ -14,8 +14,9 @@ function renderizar(lista) {
     lista.forEach(producto => {
         const li = document.createElement('li');
 
-        li.textContent = `${producto.id} - ${producto.nombre} - $${producto.precio}`;
-        ul.appendChild(li);
+       li.textContent = `${producto.id} - ${producto.nombre} - $${producto.precio}`;
+            li.className = 'bg-white p-3 rounded-md shadow-sm border border-gray-200 mb-2';
+            ul.appendChild(li);
     });
 }
 

@@ -1,22 +1,46 @@
 <!--views products.handlebars-->
-
-<h2>agregar producto</h2>
-
-<form action="/products" method="POST" enctype="multipart/form-data">
-    <input type="text" name="nombre" placeholder="ingresa nombre" required />
-    <input type="number" name="precio" placeholder="ingresa precio" required />
-    <input type="file" name="imagen"  />
-    <button type="submit">Agregar</button>
+<div class="container mx-auto p-4">
+    <h2 class="text-2xl font-bold mb-4">Agregar Producto (tradicional)</h2>
+    <form action="/products" method="POST" enctype="multipart/form-data" class="bg-gray-100 p-6 rounded-lg shadow-md">
+        <div class="mb-4">
+            <label for="nombre" class="block text-gray-700 font-bold mb-2">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Ingresa nombre" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div class="mb-4">
+            <label for="precio" class="block text-gray-700 font-bold mb-2">Precio:</label>
+            <input type="number" id="precio" name="precio" placeholder="Ingresa precio" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div class="mb-4">
+            <label for="imagen" class="block text-gray-700 font-bold mb-2">Imagen:</label>
+            <input type="file" id="imagen" name="imagen" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+        Agregar Producto
+        </button>
     </form>
 
-<h2>Lista de productos</h2>
-<ul>
-    {{#each products}}
-        <li>
-            <strong>{{this.nombre}}</strong> - ${{this.precio}} <br/>
-            {{#if this.imagen}}
-            <img src="{{this.imagen}}" alt="{{this.nombre}}" width="100"/>
-            {{/if}}
+    <hr class="my-6 border-t-2 border-gray-300">
+
+    <h2 class="text-2xl font-bold mb-4">Lista de Productos</h2>
+    <ul class="list-disc pl-5">
+        {{#each products}}
+        <li class="bg-white p-6 rounded-lg shadow-md mb-4">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h2 class="text-xl font-semibold mb-2">{{this.nombre}}</h2>
+                    <p class="text-gray-600">Precio: ${{this.precio}}</p>
+                    <p class="text-gray-500 text-sm">ID: {{this.id}}</p>
+                </div>
+                
+                <!-- Formulario para agregar al carrito -->
+                <form action="/api/carts/1/products/{{this.id}}" method="POST">
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
+                        Agregar al carrito
+                    </button>
+                </form>
+            </div>
         </li>
-    {{/each}}
-</ul>
+        {{/each}}
+    </ul>
+
+</div>

@@ -6,9 +6,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 class CartManager {
-    constructor(filePath) {
+    constructor() {
         //rutas absolutas
-        this.path = path.join(__dirname, filePath);
+        this.path = path.join(__dirname,'..', __filename);
     }
 
     async getCarts() {

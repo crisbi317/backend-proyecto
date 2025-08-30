@@ -1,23 +1,38 @@
-[{
+[
+  {
     "id": 1,
-    "nombre": "Producto de prueba",
-    "description": "Una descripción de prueba",
+    "nombre": "Chocolate",
+    "description": "Chocolate oreo",
     "precio": 99.99,
     "imagen": [],
     "code": "A123",
     "stock": 50,
     "status": true,
-    "category": "Electrónica"
+    "category": "Chocolates"
   },
   {
     "id": 2,
-    "nombre": "Otro producto",
-    "description": "Descripción del otro producto",
+    "nombre": "Chocolate blanco",
+    "description": "Chocolate blanco con almendras",
     "precio": 49.99,
     "imagen": [],
     "code": "B456",
     "stock": 30,
     "status": true,
-    "category": "Hogar"
+    "category": "Chocolates"
+  },
+  {
+    "id": 4,
+    "nombre": "b",
+    "precio": 222,
+    "imagen": [],
+    "status": true
+  },
+  {
+    "id": 5,
+    "nombre": "b",
+    "precio": 2,
+    "imagen": [],
+    "status": true
   }
 ]

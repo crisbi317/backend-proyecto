@@ -1,4 +1,3 @@
-//routera/products.router.js
 import {Router} from 'express';
 import multer from 'multer';
 import path from 'path';
@@ -7,70 +6,80 @@ import ProductManager from '../managers/ProductManager.js';
 const router = Router();
 const productManager = new ProductManager('./data/products.json');
 
-//configurar multer
+// Configurar multer
 const storage = multer.diskStorage({
-    destination:  (req, file, cb) => {
-        cb(null, 'uploads/'); // Carpeta donde se guardarán los archivos
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/'); 
     },
-    
-    filename:  (req, file, cb) =>{
-        cb(null, Date.now() + path.extname(file.originalname)); // Nombre único para el archivo
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname)); 
     }
 });
 
-const upload = multer({storage });//instancia de multer
+const upload = multer({ storage }); // Instancia de multer
 
-//get
+// GET
 router.get('/', async(req, res) => {
-try {
-    const products = await productManager.getProducts();
-    //res.json(products);
-    res.render('products', {products});//renderiza la vista con los productos
-}
-    catch (error) {
-    res.status(500).json({error: 'Error interno del servidor'});    
-}
+    try {
+        const products = await productManager.getProducts();
+       console.log('Productos cargados:', products);
+        res.render('products', { products }); 
+    } catch (error) {
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
 });
 
-//get por id
-router.get('/:pid', async(req, res)=>{
-    const pid = req.params.pid;
+// GET: Obtener producto por ID
+router.get('/:pid', async(req, res) => {
+    const pid = Number(req.params.pid);
     const product = await productManager.getProductById(pid);
-    product ? res.json(product) : res.status(404).json({error : 'elemento no encontrado'});
-
+    if (product) {
+        res.json(product);
+    } else {
+        res.status(404).json({ error: 'Elemento no encontrado' });
+    }
 });
 
-//post crear un prod sin imagen
-router.post('/', async (req,res) => {
-    try{
-    const newProduct = await productManager.addProduct(req.body);
-    res.status(201).json(newProduct);
-} catch (error) {
-    res.status(500).json({error: 'Error interno del servidor'});
-}
-});
-
-// post crear un prod con imagen
+// POST: Crear
 router.post('/', upload.single('imagen'), async (req, res) => {
-    const {nombre,precio} = req.body;
-    const imagen = req.file ? '/uploads' + req.file.filename : null;
-    if (!nombre || !precio) {
-        return res.status(400).json({error: 'Faltan datos'});
-    }   
-     await productManager.save({nombre, precio, imagen});
-    res.redirect('/products');
+    try {
+        const { nombre, precio } = req.body;
+        
+        // Verifica 
+        if (!nombre || !precio) {
+            return res.status(400).json({ error: 'Faltan datos requeridos (nombre o precio)' });
+        }
+
+        const productData = {
+            nombre,
+            precio,
+            imagen: req.file ? '/uploads/' + req.file.filename : null
+        };
+        
+        const newProduct = await productManager.addProduct(productData);
+        res.redirect('/products'); 
+    } catch (error) {
+        console.error('Error al agregar el producto:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
 });
 
-//put actualizar
+// PUT: Actualizar un producto
 router.put('/:pid', async (req, res) => {
-    const pid = req.params.pid;
+    const pid = Number(req.params.pid);
     const updated = await productManager.updateProduct(pid, req.body);
+    if (updated.error) {
+        return res.status(404).json(updated);
+    }
     res.json(updated);
 });
 
-//delete
+// DELETE: Eliminar un producto
 router.delete('/:pid', async (req, res) => {
-    const deleted = await productManager.deleteProduct(req.params.pid);
+    const deleted = await productManager.deleteProduct(Number(req.params.pid));
+    if (deleted.error) {
+        return res.status(404).json(deleted);
+    }
     res.json(deleted);
 });
 
