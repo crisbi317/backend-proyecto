@@ -1,16 +1,14 @@
 import {promises as fs, stat} from 'fs';
 import path from 'path';
-
 import{fileURLToPath} from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
-//conf __dirname en modulos
-const __dirname = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 class CartManager {
     constructor(filePath) {
         //rutas absolutas
-        this.path = path.resolve(__dirname, '..', __filename);
+        this.path = path.join(__dirname, filePath);
     }
 
     async getCarts() {
@@ -38,21 +36,21 @@ class CartManager {
     //buscar carrito by id
     async getCartById(id) {
         const carts = await this.getCarts();
-        return carts.find(c => c.id === id);
+        return carts.find(c => c.id === Number(id));
     }
 
     //agregar prod
 
     async addProductToCart(cid, pid) {
         const carts = await this.getCarts();
-        const cart = carts.find(c => c.id === cid);
+        const cart = carts.find(c => c.id === Number(cid));
         if (!cart) return {error: 'Carrito no encontrado'};
         // filtrar por id
-        const existProduct = cart.products.find(p => p.id === pid);
+        const existProduct = cart.products.find(p => p.id === Number(pid));
         if (existProduct) {
             existProduct.quantity++;
         }else {
-            cart.products.push({id: pid, quantity: 1});
+            cart.products.push({id: Number(pid), quantity: 1});
         }
     
     

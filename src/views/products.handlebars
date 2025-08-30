@@ -1,0 +1,22 @@
+<!--views products.handlebars-->
+
+<h2>agregar producto</h2>
+
+<form action="/products" method="POST" enctype="multipart/form-data">
+    <input type="text" name="nombre" placeholder="ingresa nombre" required />
+    <input type="number" name="precio" placeholder="ingresa precio" required />
+    <input type="file" name="imagen"  />
+    <button type="submit">Agregar</button>
+    </form>
+
+<h2>Lista de productos</h2>
+<ul>
+    {{#each products}}
+        <li>
+            <strong>{{this.nombre}}</strong> - ${{this.precio}} <br/>
+            {{#if this.imagen}}
+            <img src="{{this.imagen}}" alt="{{this.nombre}}" width="100"/>
+            {{/if}}
+        </li>
+    {{/each}}
+</ul>
