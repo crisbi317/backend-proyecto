@@ -1,3 +1,4 @@
+// src/routers/carts.router.js
 import { Router } from 'express';
 //importar cart manager
 import CartManager from '../managers/CartManager.js';
@@ -59,3 +60,4 @@ router.post('/:cid/products/:pid', async (req, res) => {
 });
 
 export default router;
+

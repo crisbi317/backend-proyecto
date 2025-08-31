@@ -1,8 +1,10 @@
 // services/servicioProductos.js
 //import {getProducts, getProductsById, deleteProduct, addProduct} from "../managers/ProductManager.js";
+import CartManager from "../managers/CartManager.js";
 import ProductManager from "../managers/ProductManager.js";
 
 const productManager = new ProductManager('./data/products.json');
+const cartsManager = new CartManager();
 
 
 export function obtenerProductos() {
@@ -22,3 +24,5 @@ export function agregarProducto(datos) {
     const producto = {id, nombre, precio};
     return productManager.addProduct(producto);
 }
+
+
