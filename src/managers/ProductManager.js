@@ -1,7 +1,11 @@
 // managers/ProductManager.js
 import productModel from "../models/product.model.js";
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 class ProductManager {
+  constructor(){
+    this.model = productModel;
+  }
   // GET productos con filtros, paginación y ordenamiento
   async getProducts(filter = {}, { limit = 10, page = 1, sort } = {}) {
     const sortOption = {};

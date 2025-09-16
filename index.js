@@ -5,6 +5,9 @@ import { Server } from 'socket.io';
 import app from './src/app.js';
 import "./src/basedatos.js";
 import { obtenerProductos, agregarProducto, eliminarProducto } from "./src/services/servicioProductos.js"
+import CartManager from './src/managers/CartManager.js';
+
+const cartsManager = new CartManager();
 
 
 
@@ -19,13 +22,20 @@ app.set("io", io);
 io.on('connection', async (socket) => {
     console.log('Nuevo cliente conectado');
 
-    // logica de servicios
-    socket.emit('productos:lista', await obtenerProductos());
+    const datos = await obtenerProductos();
+   
+    socket.emit('productos:lista',datos.docs || [] );
+    
+    socket.on('carrito:crear', async () => {
+    const nuevoCarrito = await cartsManager.createCart();
+    socket.emit('carrito:creado', nuevoCarrito);
+});
 
     socket.on('producto:crear', async (datos) => {
         try{
         const creado = await agregarProducto(datos);
-        io.emit('productos:lista', await obtenerProductos());
+        const productosActualizados = await obtenerProductos();
+        io.emit('productos:lista', productosActualizados.docs);
         socket.emit('producto:creado', creado);
         } catch (error){socket.emit('error', { mensaje: 'Error al crear producto', error });}
         
@@ -33,8 +43,17 @@ io.on('connection', async (socket) => {
 
     socket.on('producto:eliminar', async (idProducto) => {
         const eliminado = await eliminarProducto(idProducto);
-        io.emit('productos:lista', await obtenerProductos());
+        const productosActualizados = await obtenerProductos();
+        io.emit('productos:lista', productosActualizados.docs);
         socket.emit('producto:eliminado', eliminado);
+    });
+    socket.on('carrito:agregar', async ({ productId, cartId }) => {
+        try {
+            const result = await cartsManager.addProductToCart(cartId, productId, 1);
+            socket.emit('carrito:actualizado', result);
+        } catch (error) {
+            socket.emit('error', { mensaje: 'Error al agregar al carrito', error });
+        }
     });
 });
 

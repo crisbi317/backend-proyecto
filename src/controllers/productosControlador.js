@@ -13,6 +13,7 @@ export async function mostrarTiempoReal(req, res) {
 }
 export async function mostrarProductos(req, res) {
     try {
+        const productos = await productManager.getProducts({}, { lean: true });
         let { limit = 10, page = 1, sort, query } = req.query;
         limit = parseInt(limit);
         page = parseInt(page);
