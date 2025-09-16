@@ -3,8 +3,10 @@ import multer from 'multer';
 import path from 'path';
 import ProductManager from '../managers/ProductManager.js';
 
+
 const router = Router();
-const productManager = new ProductManager('./data/products.json');
+
+const productManager = new ProductManager();
 
 // Configurar multer
 const storage = multer.diskStorage({
@@ -21,9 +23,10 @@ const upload = multer({ storage }); // Instancia de multer
 // GET
 router.get('/', async(req, res) => {
     try {
-        const products = await productManager.getProducts();
+        const products = await productManager.getProductById();
        console.log('Productos cargados:', products);
-        res.render('products', { products }); 
+      
+      res.render('products', { products }); 
     } catch (error) {
         res.status(500).json({ error: 'Error interno del servidor' });
     }
@@ -31,12 +34,14 @@ router.get('/', async(req, res) => {
 
 // GET: Obtener producto por ID
 router.get('/:pid', async(req, res) => {
-    const pid = Number(req.params.pid);
-    const product = await productManager.getProductById(pid);
-    if (product) {
-        res.json(product);
-    } else {
-        res.status(404).json({ error: 'Elemento no encontrado' });
+    try{
+        const product = await productManager.getProductById(req.params.pid);
+    if (!product) {
+        return res.status(404).json({error: 'Producto no encontrado'});
+    }
+    res.json(product);
+} catch (error) {
+        res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
 
@@ -56,7 +61,7 @@ router.post('/', upload.single('imagen'), async (req, res) => {
             imagen: req.file ? '/uploads/' + req.file.filename : null
         };
         
-        const newProduct = await productManager.addProduct(productData);
+        await productManager.addProduct(productData);
         res.redirect('/products'); 
     } catch (error) {
         console.error('Error al agregar el producto:', error);
@@ -66,21 +71,28 @@ router.post('/', upload.single('imagen'), async (req, res) => {
 
 // PUT: Actualizar un producto
 router.put('/:pid', async (req, res) => {
-    const pid = Number(req.params.pid);
-    const updated = await productManager.updateProduct(pid, req.body);
+    try{
+    
+    const updated = await productManager.updateProduct(req.params.pid, req.body);
+        
     if (updated.error) {
         return res.status(404).json(updated);
     }
     res.json(updated);
+} catch (error){
+    res.status(500).json({error: 'Error interno del servidor'});
+}
 });
 
 // DELETE: Eliminar un producto
 router.delete('/:pid', async (req, res) => {
-    const deleted = await productManager.deleteProduct(Number(req.params.pid));
+   try{ const deleted = await productManager.deleteProduct(Number(req.params.pid));
     if (deleted.error) {
         return res.status(404).json(deleted);
     }
     res.json(deleted);
-});
+} catch (error){
+    res.status(500).json({error: 'Error interno del servidor'});
+}});
 
 export default router;

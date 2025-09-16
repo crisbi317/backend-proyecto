@@ -29,11 +29,11 @@
                 <div>
                     <h2 class="text-xl font-semibold mb-2">{{this.nombre}}</h2>
                     <p class="text-gray-600">Precio: ${{this.precio}}</p>
-                    <p class="text-gray-500 text-sm">ID: {{this.id}}</p>
+                    <p class="text-gray-500 text-sm">ID: {{this._id}}</p>
                 </div>
                 
                 <!-- Formulario para agregar al carrito -->
-                <form action="/api/carts/{{cartId}}/products/{{this.id}}" method="POST">
+                <form action="/api/carts/{{cartId}}/products/{{this._id}}" method="POST">
                     <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
                         Agregar al carrito
                     </button>

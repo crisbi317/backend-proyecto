@@ -2,13 +2,48 @@
 import fs from 'fs/promises';
 import path from 'path';
 import {fileURLToPath} from 'url';
+import productModel from '../models/product.model.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 class ProductManager {
-    constructor(filePath) {
+async getProducts() {
+        return await productModel.find().lean();
+    }
+
+    async getProductById(id) {
+        return await productModel.findOne(id).lean();
+    }
+
+    async addProduct(productData) {
+        return await productModel.create(productData);
+    }
+
+    async addProduct(productData) {
+        // You may want to generate the id differently, or let Mongo handle _id
+        const last = await productModel.findOne().sort({ id: -1 }).lean();
+        const newId = last ? last.id + 1 : 1;
+        const newProduct = { ...productData, id: newId };
+        return await productModel.create(newProduct);
+    }
+
+    async updateProduct(id, updates) {
+        delete updates.id;
+        const updated = await productModel.findByIdAndUpdate(id, updates, {new:true});
+        if (!updated) return {error:'Producto no encontrado'};
+        return updated;
+    }
+
+    async deleteProduct(id) {
+          const deleted= await productModel.findByIdAndDelete(id);
+        if (!deleted) return { error: 'Producto no encontrado' };
+        return { message: 'Producto eliminado exitosamente' };
+    }
+}
+
+   /* constructor(filePath) {
         //rutas absolutas
         this.path = path.join(__dirname, '..', filePath);
         
@@ -33,14 +68,7 @@ class ProductManager {
         const products = await this.getProducts();
         return products.find(p => p.id === id);
     }
-//duplica funcionalidad de addProduct
-/*    async save(product) {   
-        const productos = await this.getProducts();
-        product.id = productos.length +1;
-        productos.push(product);
-        await fs.writeFile(this.path, JSON.stringify(productos, null, 2));
-        return product;
-    }*///guardar producto
+
 
     async addProduct(productData) {
         const products = await this.getProducts();
@@ -85,6 +113,6 @@ class ProductManager {
         return {mesage:'Producto eliminado exitosamente'};
         }
          
-    }  
+    }  */
 
 export default ProductManager;

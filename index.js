@@ -1,13 +1,17 @@
-//segunda entrega
+//Entrega final
 //index.js
 import http from 'http';
 import { Server } from 'socket.io';
 import app from './src/app.js';
+import "./basedatos.js";
 import { obtenerProductos, agregarProducto, eliminarProducto } from "./src/services/servicioProductos.js"
+
+
 
 const puerto = process.env.PORT || 8081;
 const servidorHttp = http.createServer(app)
 const io = new Server(servidorHttp);
+
 
 // conecto socket con express
 app.set("io", io);
@@ -19,9 +23,12 @@ io.on('connection', async (socket) => {
     socket.emit('productos:lista', await obtenerProductos());
 
     socket.on('producto:crear', async (datos) => {
+        try{
         const creado = await agregarProducto(datos);
         io.emit('productos:lista', await obtenerProductos());
         socket.emit('producto:creado', creado);
+        } catch (error){socket.emit('error', { mensaje: 'Error al crear producto', error });}
+        
     });
 
     socket.on('producto:eliminar', async (idProducto) => {
@@ -30,6 +37,8 @@ io.on('connection', async (socket) => {
         socket.emit('producto:eliminado', eliminado);
     });
 });
+
+
 
 // Se inicia el servidor HTTP 
 servidorHttp.listen(puerto, () => {

@@ -17,7 +17,22 @@ router.post('/', async(req,res) => {
     }
 });
 
-//get 
+// Listar todos los carritos
+router.get('/', async (req, res) => {
+    try {
+        const carritos = await cartsManager.getCarts();
+
+        if (!carritos.length) {
+            return res.render('carts', { titulo: 'Carritos', carritos: [] });
+        }
+
+        res.render('carts', { titulo: 'Carritos', carritos });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al obtener los carritos' });
+    }
+});
+//get por id
 router.get('/:cid', async (req, res) => {
     try{
         const {cid} = req.params;
@@ -28,7 +43,7 @@ router.get('/:cid', async (req, res) => {
             return res.status(404).json({error: 'Carrito no encontrado'});
         }
         
-        res.render('carts', { products: cart.products });
+        res.render('carts', { ttitulo: `Carrito ${cart.id}`, products: cart.products });
     } catch (error) {
         console.error(error);
         res.status(500).json({error: 'Error al obtener el carrito'});
@@ -52,7 +67,7 @@ router.post('/:cid/products/:pid', async (req, res) => {
         }
         
         // Redirige al usuario 
-        res.redirect(`/`); 
+        res.redirect(`/api/carts/${cid}`); 
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error al agregar producto al carrito' });
