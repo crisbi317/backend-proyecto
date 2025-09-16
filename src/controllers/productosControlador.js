@@ -12,9 +12,43 @@ export async function mostrarTiempoReal(req, res) {
     res.render('realTimeProducts', {titulo:"Productos en tiempo real" });
 }
 export async function mostrarProductos(req, res) {
-    const productos = await obtenerProductos();
+    try {
+        let { limit = 10, page = 1, sort, query } = req.query;
+        limit = parseInt(limit);
+        page = parseInt(page);
 
-    res.render('products', { titulo: "Productos", products: productos, cartId: 1 });
+        // filtro
+        let filter = {};
+        if (query) {
+            if (query === "disponibles") filter.status = true;
+            else filter.category = query;
+        }
+
+        const result = await productManager.getProducts(filter, { limit, page, sort });
+
+        const baseUrl = `${req.protocol}://${req.get("host")}${req.baseUrl}`;
+        const prevLink = result.hasPrevPage ? `${baseUrl}?page=${result.prevPage}&limit=${limit}` : null;
+        const nextLink = result.hasNextPage ? `${baseUrl}?page=${result.nextPage}&limit=${limit}` : null;
+
+        res.render("products", {
+            products: result.docs,
+            pagination: {
+                totalPages: result.totalPages,
+                page: result.page,
+                hasPrevPage: result.hasPrevPage,
+                hasNextPage: result.hasNextPage,
+                prevPage: result.prevPage,
+                nextPage: result.nextPage,
+                prevLink,
+                nextLink
+            },
+            cartId: 1
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error al mostrar productos");
+    }
+
 }
 export async function mostrarCarritos(req, res) {
     const carritos = await cartsManager.getCarts();
@@ -27,4 +61,15 @@ export async function mostrarCarritoPorId(req, res) {
     console.log(cart);
     if (!cart) return res.status(404).send("Carrito no encontrado");
     res.render("carts", { titulo: `Carrito ${cid}`, products: cart.products });
+}
+
+export async function mostrarProductoDetalle(req, res) {
+    try {
+        const product = await productManager.getProductById(req.params.pid);
+        if (!product) return res.status(404).send("Producto no encontrado");
+        res.render("productDetail", { product, cartId: 1 });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error al mostrar detalle del producto");
+    }
 }

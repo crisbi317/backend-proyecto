@@ -1,9 +1,9 @@
 //Entrega final
-//index.js
+//index.jsnode 
 import http from 'http';
 import { Server } from 'socket.io';
 import app from './src/app.js';
-import "./basedatos.js";
+import "./src/basedatos.js";
 import { obtenerProductos, agregarProducto, eliminarProducto } from "./src/services/servicioProductos.js"
 
 

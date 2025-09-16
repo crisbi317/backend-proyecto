@@ -3,12 +3,12 @@
 import CartManager from "../managers/CartManager.js";
 import ProductManager from "../managers/ProductManager.js";
 
-const productManager = new ProductManager('./data/products.json');
+const productManager = new ProductManager();
 const cartsManager = new CartManager();
 
 
-export function obtenerProductos() {
-    return productManager.getProducts();
+export function obtenerProductos(query ={}, options ={}) {
+    return productManager.getProducts(query, options);
 }
 export function obtenerProductoPorId(id) {
     return productManager.getProductById(id);

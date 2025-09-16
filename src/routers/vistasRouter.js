@@ -1,16 +1,29 @@
-//routers/vistasRouter.js
-import {Router} from "express";
-import {mostrarInicio, mostrarTiempoReal,mostrarProductos, mostrarCarritos, mostrarCarritoPorId} from "../controllers/productosControlador.js";
+import { Router } from "express";
+import {
+  mostrarInicio,
+  mostrarProductos,
+  mostrarProductoDetalle,
+  mostrarCarritos,
+  mostrarCarritoPorId
+} from "../controllers/productosControlador.js";
 
+export function crearRouterVistas() {
+  const router = Router();
 
-export function crearRouterVistas(){
-    const router = Router();
-    router.get('/', mostrarInicio);
-    router.get('/realtimeproducts', mostrarTiempoReal);
-    router.get('/products', mostrarProductos);
-    router.get('/carts', mostrarCarritos);
-    router.get("/carts/:cid", mostrarCarritoPorId);
-    
+  // Página de inicio
+  router.get("/", mostrarInicio);
 
-    return router;
+  // Listado de productos con paginación
+  router.get("/products", mostrarProductos);
+
+  // Detalle de un producto
+  router.get("/products/:pid", mostrarProductoDetalle);
+
+  // Carritos
+  router.get("/carts", mostrarCarritos);
+
+  // Carrito específico
+  router.get("/carts/:cid", mostrarCarritoPorId);
+
+  return router;
 }
